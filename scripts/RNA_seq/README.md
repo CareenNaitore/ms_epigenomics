@@ -11,13 +11,15 @@ Here we obtained sequences from the Geo study:GSE150337 using the software refer
 
 #### obtain the sequences from ncbi 
 #diseased sample 
-`fasterq-dump SRR11773136  -O ~/miRNAseq/input/`
-`fasterq-dump SRR11773137  -O ~/miRNAseq/input/`
+
+1. `fasterq-dump SRR11773136  -O ~/miRNAseq/input/`
+2. `fasterq-dump SRR11773137  -O ~/miRNAseq/input/`
 
 
 ##### control sample
-`fasterq-dump SRR15669479  -O ~/miRNAseq/input/`
-`fasterq-dump SRR15669480  -O ~/miRNAseq/input/`
+
+1. `fasterq-dump SRR15669479  -O ~/miRNAseq/input/`
+2. `fasterq-dump SRR15669480  -O ~/miRNAseq/input/`
 
 ### Quality check on the raw reads.
 Create a directory named FastQC to store the results later.
@@ -37,46 +39,74 @@ Bowtie2 index files contain the genome sequences to be aligned to in bowtie2 for
 Tophat2 uses bowtie2 as the base sequence aligner.:
 
 `#### Alignment of the fastqc data`
+
 `####build indexes from the genome:`
+
 `bowtie2-build GCA_000001405.29_GRCh38.p14_genomic.fna.gz human`
 
+
 `#### Alignment uing tophat software`
+
 `#### creating directory for tophat_output`
+
 `for i in ~/miRNAseq/inputs/*.fastq ; do echo "$i" | uniq ; done` 
+
 `for i in ~/miRNAseq/inputs/*.fastq ;`
+
 `do` 
+
 `C=$(basename "$i" .fastq)`
+
 `mkdir ~/miRNAseq/output/"$C"`  
+
 `done`
+
 `##### align using tophat` 
+
 `for i in for i in ~/miRNAseq/inputs/*.fastq ; do echo "$i" | uniq ; done`
+
 `for i in ~/miRNAseq/inputs/*.fastq ;`
+
 `do`
+
 `C=$(basename "$i" .fastq)`
+
 `tophat2 -r 200 -p 8 -o ~/miRNAseq/output/"$C"/Tophat_out -G ~/miRNAseq/refernces/Homo_sapiens.GRCh37.75.gtf ~/miRNAseq/refernces/human  "$i"`
+
 `done`
 
 ### Assemble gene expression from aligned reads 
 Use HTSeq to quantify the number of reads mapped to each gene:
 
 `#### Assemble gene expression from aligned reads`
+
 `for i in for i in ~/miRNAseq/inputs/*.fastq ; do echo "$i" | uniq ; done`
+
 `for i in ~/miRNAseq/inputs/*.fastq ;`
+
 `do`
+
 `C=$(basename "$i" .fastq)`
+
 `samtools view "$C"/Tophat_Out/accepted_hits.sorted.bam | python -m`
+
 `HTSeq.scripts.count -q -s no - ~/miRNAseq/refernces/Homo_sapiens.GRCh37.75.gtf>`
+
 `"$C"/"$C".count.txt`
+
 `"$i"`
+
 `done`
 
 
 ## Differential expression using EDGER
+
 RNA expression profiling is analyzed by R programming language. The expression profiles were analyzed using stastical analysis by 
 the edgeR package applying negative binomial test comparing between Healthy an diseased cells. 
 The expression profiles was determined by the false discovery rate(adjusted p value) and the log fold change between the replicates.
 
 ** edgeranalysis.R**:
+
 This script is in r code and is used to generate the maplots and the expression profile information in edgeranalysis folder, 
 it works with edgeR package in r for analysis of my sequence the scripts contains codes in r and comments for each code hence it is easy to flow.
 
